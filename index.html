@@ -1,419 +1,773 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Pub Menu - Protected Access</title>
-  <style>
-    :root{
-      --bg:#f7f7f8; --card:#ffffff; --accent:#ef6c4e; --muted:#6b6b6b; --maxw:1000px;
-      --radius:14px; --error:#dc2626; --success:#059669;
-    }
-    *{box-sizing:border-box}
-    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); margin:0; color:#111}
-    .wrap{max-width:var(--maxw); margin:40px auto; padding:24px}
-    h1{font-size:36px; margin-bottom:24px; text-align:center}
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pub Menu - Protected Access</title>
+    <style>
+      :root {
+        --bg: #f7f7f8;
+        --card: #ffffff;
+        --accent: #ef6c4e;
+        --muted: #6b6b6b;
+        --maxw: 1000px;
+        --radius: 14px;
+        --error: #dc2626;
+        --success: #059669;
+      }
 
-    /* Login Form Styles */
-    .login-container{
-      max-width:400px; margin:60px auto; background:var(--card); 
-      border-radius:var(--radius); box-shadow:0 6px 22px rgba(16,24,40,0.12); 
-      padding:40px 32px; text-align:center;
-    }
-    .login-title{font-size:24px; margin-bottom:8px; color:#111}
-    .login-subtitle{color:var(--muted); margin-bottom:32px; font-size:14px}
-    .pin-input{
-      width:100%; padding:14px 16px; border:2px solid #e5e7eb; 
-      border-radius:8px; font-size:16px; text-align:center; 
-      letter-spacing:4px; margin-bottom:16px; outline:none; transition:border-color 0.2s;
-    }
-    .pin-input:focus{border-color:var(--accent)}
-    .pin-input.error{border-color:var(--error)}
-    .login-btn{
-      width:100%; padding:14px; background:var(--accent); color:white; 
-      border:none; border-radius:8px; font-size:16px; cursor:pointer; 
-      transition:background 0.2s;
-    }
-    .login-btn:hover{background:#d55a3c}
-    .login-btn:disabled{background:#ccc; cursor:not-allowed}
-    .error-msg{color:var(--error); font-size:14px; margin-top:12px; display:none}
+      * {
+        box-sizing: border-box;
+      }
 
-    /* Menu Styles */
-    .menu-container{display:none}
-    .menu-grid{display:grid; grid-template-columns:1fr; gap:24px}
-    @media(min-width:720px){.menu-grid{grid-template-columns:1fr 1fr}}
+      body {
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial;
+        background: var(--bg);
+        margin: 0;
+        color: #111;
+      }
 
-    .card{background:var(--card); border-radius:var(--radius); box-shadow:0 6px 22px rgba(16,24,40,0.08); overflow:hidden; display:flex; flex-direction:column}
+      .wrap {
+        max-width: var(--maxw);
+        margin: 40px auto;
+        padding: 24px;
+      }
 
-    .media{height:200px; background:#ddd; overflow:hidden}
-    .media img{width:100%; height:100%; object-fit:cover; display:block}
+      h1 {
+        font-size: 36px;
+        margin-bottom: 24px;
+        text-align: center;
+      }
 
-    .meta{padding:18px}
-    .dish-title{margin:0; font-size:22px}
-    .sub{color:var(--muted); margin-bottom:12px; font-size:14px}
-    .desc{line-height:1.5; margin-bottom:12px; font-size:15px}
-    .ingredients{font-size:14px; color:#333; margin-bottom:12px}
-    .ingredients ul{margin:0; padding-left:18px}
-    .price{font-weight:700; font-size:16px; color:var(--accent)}
+      /* Login Form Styles */
+      .login-container {
+        max-width: 400px;
+        margin: 60px auto;
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: 0 6px 22px rgba(16, 24, 40, 0.12);
+        padding: 40px 32px;
+        text-align: center;
+      }
 
-    .logout-btn{
-      position:fixed; top:20px; right:20px; padding:8px 16px; 
-      background:#666; color:white; border:none; border-radius:6px; 
-      cursor:pointer; font-size:14px;
-    }
-    .logout-btn:hover{background:#555}
-  </style>
-</head>
-<body>
-  <!-- Login Form -->
-  <div id="loginForm" class="login-container">
-    <h2 class="login-title">🔒 Restricted Access</h2>
-    <p class="login-subtitle">Enter PIN to access the menu</p>
-    <input type="password" id="pinInput" class="pin-input" placeholder="••••" maxlength="4" autocomplete="off">
-    <button onclick="checkPin()" class="login-btn" id="loginBtn">Login</button>
-    <div id="errorMsg" class="error-msg">Incorrect PIN. Please try again.</div>
-    <div style="margin-top:24px; padding-top:24px; border-top:1px solid #e5e7eb; font-size:12px; color:var(--muted)">
-      Demo PIN: <strong>1234</strong>
+      .login-title {
+        font-size: 24px;
+        margin-bottom: 8px;
+        color: #111;
+      }
+
+      .login-subtitle {
+        color: var(--muted);
+        margin-bottom: 32px;
+        font-size: 14px;
+      }
+
+      .pin-input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 16px;
+        text-align: center;
+        letter-spacing: 4px;
+        margin-bottom: 16px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .pin-input:focus {
+        border-color: var(--accent);
+      }
+
+      .pin-input.error {
+        border-color: var(--error);
+      }
+
+      .login-btn {
+        width: 100%;
+        padding: 14px;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .login-btn:hover {
+        background: #d55a3c;
+      }
+
+      .login-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .error-msg {
+        color: var(--error);
+        font-size: 14px;
+        margin-top: 12px;
+        display: none;
+      }
+
+      /* Menu Styles */
+      .menu-container {
+        display: none;
+      }
+
+      .menu-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      @media (min-width: 720px) {
+        .menu-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: 0 6px 22px rgba(16, 24, 40, 0.08);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .media {
+        height: 200px;
+        background: #ddd;
+        overflow: hidden;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .media:hover {
+        opacity: 0.9;
+      }
+
+      .media::after {
+        content: "🔍";
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 18px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .media:hover::after {
+        opacity: 1;
+      }
+
+      .media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .meta {
+        padding: 18px;
+      }
+
+      .dish-title {
+        margin: 0;
+        font-size: 22px;
+      }
+
+      .sub {
+        color: var(--muted);
+        margin-bottom: 12px;
+        font-size: 14px;
+      }
+
+      .desc {
+        line-height: 1.5;
+        margin-bottom: 12px;
+        font-size: 15px;
+      }
+
+      .ingredients {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 12px;
+      }
+
+      .ingredients ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .price {
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--accent);
+      }
+
+      .logout-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 8px 16px;
+        background: #666;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        z-index: 100;
+      }
+
+      .logout-btn:hover {
+        background: #555;
+      }
+
+      /* Lightbox Styles */
+      .lightbox {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .lightbox.active {
+        display: flex;
+      }
+
+      .lightbox-content {
+        max-width: 90%;
+        max-height: 90%;
+        position: relative;
+        animation: zoomIn 0.3s ease;
+      }
+
+      .lightbox-content img {
+        max-width: 100%;
+        max-height: 90vh;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .lightbox-close {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        background: white;
+        color: #111;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+      }
+
+      .lightbox-close:hover {
+        background: #f0f0f0;
+      }
+
+      .lightbox-caption {
+        position: absolute;
+        bottom: -50px;
+        left: 0;
+        right: 0;
+        color: white;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 500;
+      }
+
+      @keyframes zoomIn {
+        from {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Login Form -->
+    <div id="loginForm" class="login-container">
+      <h2 class="login-title">🔒 Restricted Access</h2>
+      <p class="login-subtitle">Enter PIN to access the menu</p>
+      <input
+        type="password"
+        id="pinInput"
+        class="pin-input"
+        placeholder="••••"
+        maxlength="4"
+        autocomplete="off"
+      />
+      <button onclick="checkPin()" class="login-btn" id="loginBtn">
+        Login
+      </button>
+      <div id="errorMsg" class="error-msg">
+        Incorrect PIN. Please try again.
+      </div>
+      <div
+        style="
+          margin-top: 24px;
+          padding-top: 24px;
+          border-top: 1px solid #e5e7eb;
+          font-size: 12px;
+          color: var(--muted);
+        "
+      >
+        Demo PIN: <strong>1234</strong>
+      </div>
     </div>
-  </div>
 
-  <!-- Menu Content (Hidden initially) -->
-  <div id="menuContent" class="menu-container">
-    <button onclick="logout()" class="logout-btn">Logout</button>
-    <main class="wrap">
-      <h1>Clapham North Menu</h1>
-      <div class="menu-grid" id="menuList"></div>
-    </main>
-  </div>
+    <!-- Menu Content -->
+    <div id="menuContent" class="menu-container">
+      <button onclick="logout()" class="logout-btn">Logout</button>
+      <main class="wrap">
+        <h1>Clapham North Menu</h1>
+        <div class="menu-grid" id="menuList"></div>
+      </main>
+    </div>
 
-  <script>
-    // Simple SHA-256 hash for PIN (use crypto library in production)
-    async function simpleHash(text) {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(text);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+      <div class="lightbox-content" onclick="event.stopPropagation()">
+        <button class="lightbox-close" onclick="closeLightbox()">×</button>
+        <img id="lightboxImg" src="" alt="" />
+        <div id="lightboxCaption" class="lightbox-caption"></div>
+      </div>
+    </div>
 
-    // Correct PIN hash (hash of "1234")
-    const correctPinHash = "f8638b979b2f4f793ddb6dbd197e0ee25a7a6ea32b0ae22f5e3c5d119d839e75";
-
-    // Menu data
-    const menu = [
-      // STARTERS
-      {
-        title: "Sautéed Brixham Squid",
-        subtitle: "Starter • 478 kcal",
-        description: "Fresh squid with nduja, sourdough, and squid ink aioli.",
-        image: "images/squid.jpeg",
-        ingredients: ["Brixham squid", "Nduja", "Sourdough", "Squid ink aioli"],
-        price: "£7.50",
-        category: "starters"
-      },
-      {
-        title: "Cauliflower and Vegan Feta Fritters",
-        subtitle: "Starter (vg) • 628 kcal",
-        description: "Crispy fritters with Hurfa sweet chilli sauce.",
-        image: "",
-        ingredients: ["Cauliflower", "Vegan feta", "Hurfa sweet chilli"],
-        price: "£9.00",
-        category: "starters"
-      },
-      {
-        title: "Grilled Tenderstem Broccoli",
-        subtitle: "Starter (vg) • 356 kcal",
-        description: "With romesco sauce and smoked almonds.",
-        image: "images/broccoli.jpeg",
-        ingredients: ["Tenderstem broccoli", "Romesco sauce", "Smoked almonds"],
-        price: "£7.00",
-        category: "starters"
-      },
-      {
-        title: "Fried Buttermilk Chicken Wings",
-        subtitle: "Starter • 679 kcal",
-        description: "Crispy wings with hot honey sauce.",
-        image: "images/wings.jpeg",
-        ingredients: ["Buttermilk chicken wings", "Hot honey sauce"],
-        price: "£8.00",
-        category: "starters"
-      },
-      {
-        title: "Glazed Chicken Skewers",
-        subtitle: "Starter • 370 kcal",
-        description: "With miso, lime and tarragon mayo.",
-        image: "images/skewers.jpeg",
-        ingredients: ["Chicken skewers", "Miso glaze", "Lime", "Tarragon mayo"],
-        price: "£7.00",
-        category: "starters"
-      },
-      {
-        title: "Grilled Corn",
-        subtitle: "Starter • 187 kcal",
-        description: "Pico de Gallo with Isle of Wight tomato salsa.",
-        image: "images/corn.jpeg",
-        ingredients: ["Grilled corn", "Pico de Gallo", "Isle of Wight tomato salsa"],
-        price: "£4.00",
-        category: "starters"
-      },
-      {
-        title: "Naughty Tots",
-        subtitle: "Starter • 771 kcal",
-        description: "Pulled chicken thigh, pico de gallo, chicken gravy, melted cheese, crispy shallots, hot honey mayo.",
-        image: "images/tots.jpeg",
-        ingredients: ["Pulled chicken thigh", "Pico de gallo", "Chicken gravy", "Melted cheese", "Crispy shallots", "Hot honey mayo"],
-        price: "£8.00",
-        category: "starters"
-      },
-      {
-        title: "Triple Cooked Chips",
-        subtitle: "Starter • 673 kcal",
-        description: "Our signature crispy chips.",
-        image: "images/chips.jpeg",
-        ingredients: ["Triple cooked chips"],
-        price: "£4.50",
-        category: "starters"
-      },
-
-      // MAINS
-      {
-        title: "Flat Iron Chicken",
-        subtitle: "Main • 1729 kcal",
-        description: "Hassleback jersey royals with pickled fennel salad.",
-        image: "images/flatiron.jpeg",
-        ingredients: ["Flat iron chicken", "Hassleback jersey royals", "Pickled fennel salad"],
-        price: "£18.00",
-        category: "mains"
-      },
-      {
-        title: "Cyder Battered Haddock & Triple Cooked Chips",
-        subtitle: "Main • 735 kcal",
-        description: "Marrowfat peas, curry sauce, tartar sauce, charred lemon.",
-        image: "images/fishandchips.jpeg",
-        ingredients: ["Cyder battered haddock", "Triple cooked chips", "Marrowfat peas", "Curry sauce", "Tartar sauce", "Charred lemon"],
-        price: "£19.50",
-        category: "mains"
-      },
-      {
-        title: "Buttermilk Chicken Thigh Burger",
-        subtitle: "Main • 1112 kcal",
-        description: "Crispy maple cured bacon, honey hot sauce mayo, fennel and lime slaw, fries.",
-        image: "images/chickenburger.jpeg",
-        ingredients: ["Buttermilk chicken thigh", "Crispy maple cured bacon", "Honey hot sauce mayo", "Fennel and lime slaw", "Fries"],
-        price: "£16.00",
-        category: "mains"
-      },
-      {
-        title: "Clapham North Signature Burger",
-        subtitle: "Main • 946 kcal",
-        description: "Burger cheese, pickled onions, gherkin, burger sauce, fries.",
-        image: "images/beefburger.jpeg",
-        ingredients: ["Beef patty", "Burger cheese", "Pickled onions", "Gherkin", "Burger sauce", "Fries"],
-        price: "£17.50",
-        category: "mains"
-      },
-      {
-        title: "Plant Burger",
-        subtitle: "Main (vg) • 667 kcal",
-        description: "Vegan cheddar, pickled onions, gherkin, burger sauce, fries.",
-        image: "",
-        ingredients: ["Plant-based patty", "Vegan cheddar", "Pickled onions", "Gherkin", "Burger sauce", "Fries"],
-        price: "£16.50",
-        category: "mains"
-      },
-      {
-        title: "Rump Steak",
-        subtitle: "Main • 1230 kcal",
-        description: "Bone marrow and wild garlic crumb, Madeira sauce, fries.",
-        image: "",
-        ingredients: ["Rump steak", "Bone marrow", "Wild garlic crumb", "Madeira sauce", "Fries"],
-        price: "£19.00",
-        category: "mains"
-      },
-
-      // PUDDINGS
-      {
-        title: "Banana Split",
-        subtitle: "Pudding (vg) • 463 kcal",
-        description: "Salted caramel ice cream with chocolate chip cookies.",
-        image: "",
-        ingredients: ["Banana", "Salted caramel ice cream", "Chocolate chip cookies"],
-        price: "£6.00",
-        category: "puddings"
-      },
-      {
-        title: "Honey Roasted Peach",
-        subtitle: "Pudding • 415 kcal",
-        description: "Whipped mascarpone with macerated raspberries.",
-        image: "",
-        ingredients: ["Honey roasted peach", "Whipped mascarpone", "Macerated raspberries"],
-        price: "£6.00",
-        category: "puddings"
-      },
-      {
-        title: "Strawberry & Basil Cheesecake",
-        subtitle: "Pudding • 802 kcal",
-        description: "Classic cheesecake with strawberry and basil.",
-        image: "",
-        ingredients: ["Cheesecake", "Strawberry", "Basil"],
-        price: "£6.00",
-        category: "puddings"
-      },
-      {
-        title: "Ice Cream Scoop",
-        subtitle: "Pudding • 358 kcal",
-        description: "Single scoop of premium ice cream.",
-        image: "",
-        ingredients: ["Premium ice cream"],
-        price: "£2.50",
-        category: "puddings"
+    <script>
+      async function simpleHash(text) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
       }
-    ];
 
-    // Check if user is already authenticated
-    function checkAuthStatus() {
-      const isAuthenticated = sessionStorage.getItem('authenticated') === 'true';
-      if (isAuthenticated) {
-        showMenu();
-      }
-    }
+      const correctPinHash =
+        "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
 
-    // PIN verification
-    async function checkPin() {
-      const pinInput = document.getElementById('pinInput');
-      const errorMsg = document.getElementById('errorMsg');
-      const loginBtn = document.getElementById('loginBtn');
-      
-      const enteredPin = pinInput.value.trim();
-      
-      if (enteredPin.length !== 4) {
-        showError('PIN must be 4 digits');
-        return;
+      const menu = [
+        {
+          title: "Sautéed Brixham Squid",
+          subtitle: "Starter • 478 kcal",
+          description:
+            "Fresh squid with nduja, sourdough, and squid ink aioli.",
+          image: "images/squid.jpeg",
+          ingredients: [
+            "Brixham squid",
+            "Nduja",
+            "Sourdough",
+            "Squid ink aioli",
+          ],
+          price: "£7.50",
+          category: "starters",
+        },
+        {
+          title: "Cauliflower and Vegan Feta Fritters",
+          subtitle: "Starter (vg) • 628 kcal",
+          description: "Crispy fritters with Hurfa sweet chilli sauce.",
+          image: "",
+          ingredients: ["Cauliflower", "Vegan feta", "Hurfa sweet chilli"],
+          price: "£9.00",
+          category: "starters",
+        },
+        {
+          title: "Grilled Tenderstem Broccoli",
+          subtitle: "Starter (vg) • 356 kcal",
+          description: "With romesco sauce and smoked almonds.",
+          image: "images/broccoli.jpeg",
+          ingredients: [
+            "Tenderstem broccoli",
+            "Romesco sauce",
+            "Smoked almonds",
+          ],
+          price: "£7.00",
+          category: "starters",
+        },
+        {
+          title: "Fried Buttermilk Chicken Wings",
+          subtitle: "Starter • 679 kcal",
+          description: "Crispy wings with hot honey sauce.",
+          image: "images/wings.jpeg",
+          ingredients: ["Buttermilk chicken wings", "Hot honey sauce"],
+          price: "£8.00",
+          category: "starters",
+        },
+        {
+          title: "Glazed Chicken Skewers",
+          subtitle: "Starter • 370 kcal",
+          description: "With miso, lime and tarragon mayo.",
+          image: "images/skewers.jpeg",
+          ingredients: [
+            "Chicken skewers",
+            "Miso glaze",
+            "Lime",
+            "Tarragon mayo",
+          ],
+          price: "£7.00",
+          category: "starters",
+        },
+        {
+          title: "Grilled Corn",
+          subtitle: "Starter • 187 kcal",
+          description: "Pico de Gallo with Isle of Wight tomato salsa.",
+          image: "images/corn.jpeg",
+          ingredients: [
+            "Grilled corn",
+            "Pico de Gallo",
+            "Isle of Wight tomato salsa",
+          ],
+          price: "£4.00",
+          category: "starters",
+        },
+        {
+          title: "Naughty Tots",
+          subtitle: "Starter • 771 kcal",
+          description:
+            "Pulled chicken thigh, pico de gallo, chicken gravy, melted cheese, crispy shallots, hot honey mayo.",
+          image: "images/tots.jpeg",
+          ingredients: [
+            "Pulled chicken thigh",
+            "Pico de gallo",
+            "Chicken gravy",
+            "Melted cheese",
+            "Crispy shallots",
+            "Hot honey mayo",
+          ],
+          price: "£8.00",
+          category: "starters",
+        },
+        {
+          title: "Triple Cooked Chips",
+          subtitle: "Starter • 673 kcal",
+          description: "Our signature crispy chips.",
+          image: "images/chips.jpeg",
+          ingredients: ["Triple cooked chips"],
+          price: "£4.50",
+          category: "starters",
+        },
+        {
+          title: "Flat Iron Chicken",
+          subtitle: "Main • 1729 kcal",
+          description: "Hassleback jersey royals with pickled fennel salad.",
+          image: "images/flatiron.jpeg",
+          ingredients: [
+            "Flat iron chicken",
+            "Hassleback jersey royals",
+            "Pickled fennel salad",
+          ],
+          price: "£18.00",
+          category: "mains",
+        },
+        {
+          title: "Cyder Battered Haddock & Triple Cooked Chips",
+          subtitle: "Main • 735 kcal",
+          description:
+            "Marrowfat peas, curry sauce, tartar sauce, charred lemon.",
+          image: "images/fishandchips.jpeg",
+          ingredients: [
+            "Cyder battered haddock",
+            "Triple cooked chips",
+            "Marrowfat peas",
+            "Curry sauce",
+            "Tartar sauce",
+            "Charred lemon",
+          ],
+          price: "£19.50",
+          category: "mains",
+        },
+        {
+          title: "Buttermilk Chicken Thigh Burger",
+          subtitle: "Main • 1112 kcal",
+          description:
+            "Crispy maple cured bacon, honey hot sauce mayo, fennel and lime slaw, fries.",
+          image: "images/chickenburger.jpeg",
+          ingredients: [
+            "Buttermilk chicken thigh",
+            "Crispy maple cured bacon",
+            "Honey hot sauce mayo",
+            "Fennel and lime slaw",
+            "Fries",
+          ],
+          price: "£16.00",
+          category: "mains",
+        },
+        {
+          title: "Clapham North Signature Burger",
+          subtitle: "Main • 946 kcal",
+          description:
+            "Burger cheese, pickled onions, gherkin, burger sauce, fries.",
+          image: "images/beefburger.jpeg",
+          ingredients: [
+            "Beef patty",
+            "Burger cheese",
+            "Pickled onions",
+            "Gherkin",
+            "Burger sauce",
+            "Fries",
+          ],
+          price: "£17.50",
+          category: "mains",
+        },
+        {
+          title: "Plant Burger",
+          subtitle: "Main (vg) • 667 kcal",
+          description:
+            "Vegan cheddar, pickled onions, gherkin, burger sauce, fries.",
+          image: "",
+          ingredients: [
+            "Plant-based patty",
+            "Vegan cheddar",
+            "Pickled onions",
+            "Gherkin",
+            "Burger sauce",
+            "Fries",
+          ],
+          price: "£16.50",
+          category: "mains",
+        },
+        {
+          title: "Rump Steak",
+          subtitle: "Main • 1230 kcal",
+          description:
+            "Bone marrow and wild garlic crumb, Madeira sauce, fries.",
+          image: "images/steak.jpeg",
+          ingredients: [
+            "Rump steak",
+            "Bone marrow",
+            "Wild garlic crumb",
+            "Madeira sauce",
+            "Fries",
+          ],
+          price: "£19.00",
+          category: "mains",
+        },
+        {
+          title: "Banana Split",
+          subtitle: "Pudding (vg) • 463 kcal",
+          description: "Salted caramel ice cream with chocolate chip cookies.",
+          image: "",
+          ingredients: [
+            "Banana",
+            "Salted caramel ice cream",
+            "Chocolate chip cookies",
+          ],
+          price: "£6.00",
+          category: "puddings",
+        },
+        {
+          title: "Honey Roasted Peach",
+          subtitle: "Pudding • 415 kcal",
+          description: "Whipped mascarpone with macerated raspberries.",
+          image: "",
+          ingredients: [
+            "Honey roasted peach",
+            "Whipped mascarpone",
+            "Macerated raspberries",
+          ],
+          price: "£6.00",
+          category: "puddings",
+        },
+        {
+          title: "Strawberry & Basil Cheesecake",
+          subtitle: "Pudding • 802 kcal",
+          description: "Classic cheesecake with strawberry and basil.",
+          image: "",
+          ingredients: ["Cheesecake", "Strawberry", "Basil"],
+          price: "£6.00",
+          category: "puddings",
+        },
+        {
+          title: "Ice Cream Scoop",
+          subtitle: "Pudding • 358 kcal",
+          description: "Single scoop of premium ice cream.",
+          image: "",
+          ingredients: ["Premium ice cream"],
+          price: "£2.50",
+          category: "puddings",
+        },
+        {
+          title: "Sunday Roast",
+          subtitle: "Sunday Roast",
+          description: "Sunday Roast served with all the trimmings.",
+          image: "images/roast.jpeg",
+          ingredients: [
+            "Potatos, Carrots, Red Cabbage, Creamy Leeks, Yorkshire Pudding, Gravy",
+          ],
+          price: "£0.00",
+          category: "Sunday Roast",
+        },
+      ];
+
+      function checkAuthStatus() {
+        const isAuthenticated =
+          sessionStorage.getItem("authenticated") === "true";
+        if (isAuthenticated) showMenu();
       }
-      
-      loginBtn.disabled = true;
-      loginBtn.textContent = 'Verifying...';
-      
-      try {
-        const enteredHash = await simpleHash(enteredPin);
-        
-        if (enteredHash === correctPinHash) {
-          // Correct PIN
-          sessionStorage.setItem('authenticated', 'true');
-          showMenu();
-        } else {
-          // Incorrect PIN
-          showError('Incorrect PIN. Please try again.');
-          pinInput.value = '';
-          pinInput.focus();
+
+      async function checkPin() {
+        const pinInput = document.getElementById("pinInput");
+        const errorMsg = document.getElementById("errorMsg");
+        const loginBtn = document.getElementById("loginBtn");
+        const enteredPin = pinInput.value.trim();
+        if (enteredPin.length !== 4) {
+          showError("PIN must be 4 digits");
+          return;
         }
-      } catch (error) {
-        showError('Verification error. Please try again.');
-      }
-      
-      loginBtn.disabled = false;
-      loginBtn.textContent = 'Login';
-    }
-
-    // Show error message
-    function showError(message) {
-      const errorMsg = document.getElementById('errorMsg');
-      const pinInput = document.getElementById('pinInput');
-      
-      errorMsg.textContent = message;
-      errorMsg.style.display = 'block';
-      pinInput.classList.add('error');
-      
-      setTimeout(() => {
-        errorMsg.style.display = 'none';
-        pinInput.classList.remove('error');
-      }, 3000);
-    }
-
-    // Show menu
-    function showMenu() {
-      document.getElementById('loginForm').style.display = 'none';
-      document.getElementById('menuContent').style.display = 'block';
-      renderMenu(menu);
-    }
-
-    // Logout function
-    function logout() {
-      sessionStorage.removeItem('authenticated');
-      document.getElementById('loginForm').style.display = 'block';
-      document.getElementById('menuContent').style.display = 'none';
-      document.getElementById('pinInput').value = '';
-    }
-
-    // Render menu
-    function renderMenu(list) {
-      const container = document.getElementById('menuList');
-      container.innerHTML = '';
-      
-      // Group by categories
-      const categories = {
-        'starters': { title: 'STARTERS', items: [] },
-        'mains': { title: 'MAINS', items: [] },
-        'puddings': { title: 'PUDDINGS', items: [] }
-      };
-      
-      list.forEach(dish => {
-        if (categories[dish.category]) {
-          categories[dish.category].items.push(dish);
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Verifying...";
+        try {
+          const enteredHash = await simpleHash(enteredPin);
+          if (enteredHash === correctPinHash) {
+            sessionStorage.setItem("authenticated", "true");
+            showMenu();
+          } else {
+            showError("Incorrect PIN. Please try again.");
+            pinInput.value = "";
+            pinInput.focus();
+          }
+        } catch (error) {
+          showError("Verification error. Please try again.");
         }
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login";
+      }
+
+      function showError(message) {
+        const errorMsg = document.getElementById("errorMsg");
+        const pinInput = document.getElementById("pinInput");
+        errorMsg.textContent = message;
+        errorMsg.style.display = "block";
+        pinInput.classList.add("error");
+        setTimeout(() => {
+          errorMsg.style.display = "none";
+          pinInput.classList.remove("error");
+        }, 3000);
+      }
+
+      function showMenu() {
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("menuContent").style.display = "block";
+        renderMenu(menu);
+      }
+
+      function logout() {
+        sessionStorage.removeItem("authenticated");
+        document.getElementById("loginForm").style.display = "block";
+        document.getElementById("menuContent").style.display = "none";
+        document.getElementById("pinInput").value = "";
+      }
+
+      // Lightbox functions
+      function openLightbox(imageSrc, caption) {
+        if (!imageSrc) return;
+        document.getElementById("lightboxImg").src = imageSrc;
+        document.getElementById("lightboxCaption").textContent = caption;
+        document.getElementById("lightbox").classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeLightbox() {
+        document.getElementById("lightbox").classList.remove("active");
+        document.body.style.overflow = "auto";
+      }
+
+      // Close lightbox with Escape key
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeLightbox();
       });
-      
-      // Render each category
-      Object.values(categories).forEach(category => {
-        if (category.items.length > 0) {
-          // Category header
-          const categoryHeader = document.createElement('div');
-          categoryHeader.style.gridColumn = '1 / -1';
-          categoryHeader.style.textAlign = 'center';
-          categoryHeader.style.margin = '32px 0 24px 0';
-          categoryHeader.innerHTML = `<h2 style="font-size: 28px; color: var(--muted); letter-spacing: 2px; margin: 0;">${category.title}</h2>`;
-          container.appendChild(categoryHeader);
-          
-          // Category items
-          category.items.forEach(dish => {
-            const card = document.createElement('div');
-            card.className = 'card';
 
-            card.innerHTML = `
-              <div class="media"><img src="${dish.image}" alt="${dish.title}"></div>
-              <div class="meta">
-                <h3 class="dish-title">${dish.title}</h3>
-                <p class="sub">${dish.subtitle}</p>
-                <p class="desc">${dish.description}</p>
-                <div class="ingredients">
-                  <strong>Ingredients:</strong>
-                  <ul>${dish.ingredients.map(i=>`<li>${i}</li>`).join('')}</ul>
-                </div>
-                <div class="price">${dish.price}</div>
-              </div>
-            `;
-
-            container.appendChild(card);
-          });
-        }
-      });
-    }
-
-    // Event listeners
-    document.getElementById('pinInput').addEventListener('keypress', function(e) {
-      // Accept only numbers
-      if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Enter') {
-        e.preventDefault();
+      function renderMenu(list) {
+        const container = document.getElementById("menuList");
+        container.innerHTML = "";
+        const categories = {
+          starters: { title: "STARTERS", items: [] },
+          mains: { title: "MAINS", items: [] },
+          puddings: { title: "PUDDINGS", items: [] },
+          "Sunday Roast": { title: "SUNDAY ROAST", items: [] },
+        };
+        list.forEach((dish) => {
+          if (categories[dish.category])
+            categories[dish.category].items.push(dish);
+        });
+        Object.values(categories).forEach((category) => {
+          if (category.items.length > 0) {
+            const categoryHeader = document.createElement("div");
+            categoryHeader.style.gridColumn = "1 / -1";
+            categoryHeader.style.textAlign = "center";
+            categoryHeader.style.margin = "32px 0 24px 0";
+            categoryHeader.innerHTML = `<h2 style="font-size: 28px; color: var(--muted); letter-spacing: 2px; margin: 0;">${category.title}</h2>`;
+            container.appendChild(categoryHeader);
+            category.items.forEach((dish) => {
+              const card = document.createElement("div");
+              card.className = "card";
+              const hasImage = dish.image && dish.image.trim() !== "";
+              card.innerHTML = `
+${
+  hasImage
+    ? `<div class="media" onclick="openLightbox('${dish.image}', '${dish.title}')"><img src="${dish.image}" alt="${dish.title}"></div>`
+    : ""
+}
+<div class="meta">
+<h3 class="dish-title">${dish.title}</h3>
+<p class="sub">${dish.subtitle}</p>
+<p class="desc">${dish.description}</p>
+<div class="ingredients">
+<strong>Ingredients:</strong>
+<ul>${dish.ingredients.map((i) => `<li>${i}</li>`).join("")}</ul>
+</div>
+<div class="price">${dish.price}</div>
+</div>
+`;
+              container.appendChild(card);
+            });
+          }
+        });
       }
-      
-      // Submit on Enter
-      if (e.key === 'Enter') {
-        checkPin();
-      }
-    });
 
-    // Check authentication on startup
-    checkAuthStatus();
-  </script>
-</body>
+      document
+        .getElementById("pinInput")
+        .addEventListener("keypress", function (e) {
+          if (
+            !/[0-9]/.test(e.key) &&
+            e.key !== "Backspace" &&
+            e.key !== "Delete" &&
+            e.key !== "Enter"
+          ) {
+            e.preventDefault();
+          }
+          if (e.key === "Enter") checkPin();
+        });
+
+      checkAuthStatus();
+    </script>
+  </body>
 </html>
