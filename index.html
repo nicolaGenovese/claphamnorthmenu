@@ -15,6 +15,21 @@
         --error: #dc2626;
         --success: #059669;
       }
+      img {
+        -webkit-user-drag: none;
+        user-drag: none;
+        -webkit-user-select: none;
+        user-select: none;
+        pointer-events: none; /* impedisce click o menu su immagine */
+      }
+      
+
+      .menu-grid img {
+        -webkit-user-drag: none;
+        user-drag: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
 
       * {
         box-sizing: border-box;
@@ -376,8 +391,6 @@
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
       }
-
-
 
       const menu = [
         {
@@ -780,6 +793,22 @@ ${
         });
 
       checkAuthStatus();
+    </script>
+    <script>
+      // Disabilita click destro su tutta la pagina
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault()
+      );
+
+      // Disabilita trascinamento e salvataggio delle immagini
+      document.addEventListener("dragstart", (event) => {
+        if (event.target.tagName === "IMG") event.preventDefault();
+      });
+
+      // Disabilita tasto destro solo sulle immagini
+      document.querySelectorAll("img").forEach((img) => {
+        img.addEventListener("contextmenu", (e) => e.preventDefault());
+      });
     </script>
   </body>
 </html>
