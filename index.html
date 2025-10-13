@@ -363,6 +363,12 @@
     </div>
 
     <script>
+      function getDailyPin() {
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, "0");
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        return day + month; // es. "0201" per 2 gennaio
+      }
       async function simpleHash(text) {
         const encoder = new TextEncoder();
         const data = encoder.encode(text);
@@ -371,8 +377,7 @@
         return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
       }
 
-      const correctPinHash =
-        "f8638b979b2f4f793ddb6dbd197e0ee25a7a6ea32b0ae22f5e3c5d119d839e75";
+
 
       const menu = [
         {
@@ -638,14 +643,20 @@
         const errorMsg = document.getElementById("errorMsg");
         const loginBtn = document.getElementById("loginBtn");
         const enteredPin = pinInput.value.trim();
+
         if (enteredPin.length !== 4) {
           showError("PIN must be 4 digits");
           return;
         }
+
         loginBtn.disabled = true;
         loginBtn.textContent = "Verifying...";
+
         try {
-          const enteredHash = await simpleHash(enteredPin);
+          const todayPin = getDailyPin(); // <-- genera il PIN del giorno
+          const correctPinHash = await simpleHash(todayPin); // <-- calcola il suo hash
+          const enteredHash = await simpleHash(enteredPin); // <-- hash del PIN inserito
+
           if (enteredHash === correctPinHash) {
             sessionStorage.setItem("authenticated", "true");
             showMenu();
@@ -657,6 +668,7 @@
         } catch (error) {
           showError("Verification error. Please try again.");
         }
+
         loginBtn.disabled = false;
         loginBtn.textContent = "Login";
       }
