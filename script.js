@@ -223,4 +223,14 @@ document.querySelectorAll("img").forEach((img) => {
   img.addEventListener("contextmenu", (e) => e.preventDefault());
 });
 
+// Avviso quando la pagina perde focus
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    console.warn('⚠️ Screenshot attempt detected at:', new Date().toISOString());
+    // Potresti loggare questo evento su un server
+  }
+});
 
+window.addEventListener('blur', () => {
+  console.warn('⚠️ Window lost focus - possible screenshot');
+});
