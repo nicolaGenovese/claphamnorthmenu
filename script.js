@@ -1,6 +1,6 @@
 // Variabile per tracciare il timeout
 let inactivityTimeout;
-const INACTIVITY_TIME = 10000; // 10 secondi in millisecondi
+const INACTIVITY_TIME = 30000; // 10 secondi in millisecondi
 
 function getDailyPin() {
   const now = new Date();
@@ -222,3 +222,5 @@ document.addEventListener("dragstart", (event) => {
 document.querySelectorAll("img").forEach((img) => {
   img.addEventListener("contextmenu", (e) => e.preventDefault());
 });
+
+
